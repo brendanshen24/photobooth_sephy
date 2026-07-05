@@ -1,0 +1,5 @@
+packages:
+  - print-server
+
+allowBuilds:
+  sharp: false
