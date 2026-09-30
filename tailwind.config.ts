@@ -13,8 +13,13 @@ const config: Config = {
       animation: {
         flash: "flash 0.35s ease-out",
         countdown: "countdown 0.9s ease-in-out",
+        pop: "pop 0.35s ease-out",
       },
       keyframes: {
+        pop: {
+          "0%": { transform: "scale(0.94)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
         flash: {
           "0%": { opacity: "0.95" },
           "100%": { opacity: "0" },

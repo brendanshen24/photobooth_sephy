@@ -15,3 +15,51 @@ body {
   @apply bg-booth-bg text-white antialiased;
   margin: 0;
 }
+
+/* Otter scan frame — same treatment as the time-games badge reader. */
+.otter-frame {
+  border: 1px solid rgba(82, 82, 82, 0.3);
+  border-radius: 12px;
+  padding: 4px;
+  display: inline-block;
+  line-height: 0;
+}
+
+.otter-card {
+  width: min(64vh, 78vw);
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: none;
+  display: block;
+}
+
+.otter-text {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  text-align: center;
+  max-width: min(90vw, 440px);
+  font-family: Inter, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+.otter-text h2 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 125%;
+  letter-spacing: -0.01em;
+  color: #ededed;
+  transition: opacity 180ms ease;
+}
+
+.otter-text p {
+  margin: 0;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+  letter-spacing: -0.0075em;
+  color: #8f8f8f;
+  transition: opacity 180ms ease;
+}

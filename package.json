@@ -13,8 +13,10 @@
     "print-server:install": "pnpm --dir print-server install"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
     "@vercel/blob": "^2.4.0",
     "next": "^15.1.4",
+    "nfc-pcsc": "^0.8.1",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

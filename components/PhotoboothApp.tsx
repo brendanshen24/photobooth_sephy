@@ -12,6 +12,7 @@ import {
   STRIP_SURROUNDS,
   type SurroundId,
 } from "@/lib/stripSurrounds";
+import BadgeChallenge from "@/components/BadgeChallenge";
 import StripShareQr from "@/components/StripShareQr";
 
 const PREVIEW_SIZE = 440;
@@ -37,6 +38,9 @@ export default function PhotoboothApp() {
   const singleFrameRef = useRef<HTMLCanvasElement | null>(null);
   const [supported, setSupported] = useState(true);
   const [cameraOk, setCameraOk] = useState(false);
+  const [mirrorY, setMirrorY] = useState(true);
+  const mirrorYRef = useRef(true);
+  mirrorYRef.current = mirrorY;
   const [printerName, setPrinterName] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
   const [printError, setPrintError] = useState<string | null>(null);
@@ -46,6 +50,7 @@ export default function PhotoboothApp() {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [flash, setFlash] = useState(false);
   const [lastShot, setLastShot] = useState<string | null>(null);
+  const [admitted, setAdmitted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [thumbs, setThumbs] = useState<string[]>([]);
   const [singleThumb, setSingleThumb] = useState<string | null>(null);
@@ -75,6 +80,19 @@ export default function PhotoboothApp() {
     setSingleThumb(null);
     uploadSlotRef.current = null;
   }, []);
+
+  const openBooth = useCallback(() => setAdmitted(true), []);
+
+  const returnToScan = useCallback(() => {
+    resetStrip();
+    setLastShot(null);
+    lastPrintDataUrlRef.current = null;
+    setPrintError(null);
+    setPrintWarning(null);
+    setCountdown(null);
+    setProgress(0);
+    setAdmitted(false);
+  }, [resetStrip]);
 
   const setFrameAt = useCallback((index: number, canvas: HTMLCanvasElement) => {
     const copy = document.createElement("canvas");
@@ -203,7 +221,7 @@ export default function PhotoboothApp() {
 
     canvas.width = PREVIEW_SIZE;
     canvas.height = PREVIEW_SIZE;
-    renderVideoFrame(ctx, video, PREVIEW_SIZE);
+    renderVideoFrame(ctx, video, PREVIEW_SIZE, mirrorYRef.current);
 
     animRef.current = requestAnimationFrame(drawPreview);
   }, []);
@@ -327,7 +345,7 @@ export default function PhotoboothApp() {
       await printDataUrl(dataUrl);
       setLastShot(dataUrl);
       lastPrintDataUrlRef.current = dataUrl;
-      resetStrip();
+      returnToScan();
     } catch (err) {
       setPrintError(err instanceof Error ? err.message : "Print failed");
     } finally {
@@ -343,7 +361,7 @@ export default function PhotoboothApp() {
     await printDataUrl(dataUrl);
     setLastShot(dataUrl);
     lastPrintDataUrlRef.current = dataUrl;
-    resetStrip();
+    returnToScan();
   };
 
   const reprintLast = async (copies: number) => {
@@ -379,7 +397,7 @@ export default function PhotoboothApp() {
       setCountdown(null);
 
       flashShot();
-      captureVideoToCanvas(frameCanvas, video);
+      captureVideoToCanvas(frameCanvas, video, mirrorYRef.current);
 
       const copy = document.createElement("canvas");
       copy.width = frameCanvas.width;
@@ -404,6 +422,10 @@ export default function PhotoboothApp() {
       setCountdown(null);
     }
   };
+
+  if (!admitted) {
+    return <BadgeChallenge onAdmitted={openBooth} />;
+  }
 
   if (!supported) {
     return (
@@ -654,6 +676,19 @@ export default function PhotoboothApp() {
 
           <video ref={videoRef} className="hidden" playsInline muted />
           <canvas ref={frameCanvasRef} className="hidden" />
+
+          <button
+            type="button"
+            aria-pressed={mirrorY}
+            onClick={() => setMirrorY((on) => !on)}
+            className={`rounded-full border px-3 py-1 text-xs transition ${
+              mirrorY
+                ? "border-booth-glow bg-booth-glow/15 text-booth-glow"
+                : "border-white/20 text-white/60 hover:bg-white/5 hover:text-white/90"
+            }`}
+          >
+            Flip Y
+          </button>
 
           <div className="flex flex-col items-center gap-4 pt-2">
           <button
